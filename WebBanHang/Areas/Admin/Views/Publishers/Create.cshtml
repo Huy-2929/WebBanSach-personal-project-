@@ -1,0 +1,57 @@
+@model WebBanHang.Models.Publisher
+@{
+    ViewData["Title"] = "Thêm Nhà Xuất Bản Mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-building text-primary"></i> Thêm Nhà Xuất Bản Mới</h1>
+        <p class="text-muted mb-0">Nhập thông tin đối tác xuất bản</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Publishers" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-lg-5">
+                <form asp-area="Admin" asp-controller="Publishers" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="PublisherName" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                        <input asp-for="PublisherName" class="form-control" placeholder="Ví dụ: NXB Trẻ, NXB Kim Đồng..." autofocus />
+                        <span asp-validation-for="PublisherName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
+                        <input asp-for="Address" class="form-control" placeholder="Địa chỉ trụ sở NXB..." />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Phone" class="form-label fw-semibold"></label>
+                        <input asp-for="Phone" class="form-control" placeholder="Số điện thoại liên hệ..." />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-area="Admin" asp-controller="Publishers" asp-action="Index" class="btn btn-outline-secondary px-4">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">
+                            <i class="bi bi-check-lg me-1"></i> Lưu Nhà Xuất Bản
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

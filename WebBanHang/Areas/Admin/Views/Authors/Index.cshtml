@@ -1,0 +1,70 @@
+@model IEnumerable<WebBanHang.Models.Author>
+@{
+    ViewData["Title"] = "Quản Lý Tác Giả";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-people text-primary"></i> Quản Lý Tác Giả</h1>
+        <p class="text-muted mb-0">Tổng số: <strong>@Model.Count()</strong> tác giả</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Authors" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Tác Giả Mới
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th style="width: 250px;">Tên tác giả</th>
+                    <th>Tiểu sử / Giới thiệu</th>
+                    <th style="width: 140px;" class="text-center">Số lượng sách</th>
+                    <th style="width: 160px;">Ngày tạo</th>
+                    <th style="width: 130px;" class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted fw-bold">#@item.AuthorId</td>
+                            <td class="fw-semibold text-primary">@item.AuthorName</td>
+                            <td class="text-muted small">
+                                @(string.IsNullOrEmpty(item.Biography) ? "—" : (item.Biography.Length > 120 ? item.Biography.Substring(0, 120) + "..." : item.Biography))
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border">
+                                    @item.Books.Count cuốn
+                                </span>
+                            </td>
+                            <td class="small text-muted">@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-area="Admin" asp-controller="Authors" asp-action="Edit" asp-route-id="@item.AuthorId" class="btn btn-outline-primary" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Authors" asp-action="Delete" asp-route-id="@item.AuthorId" class="btn btn-outline-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Chưa có tác giả nào trong hệ thống.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

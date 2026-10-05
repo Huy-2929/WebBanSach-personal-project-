@@ -1,0 +1,82 @@
+@model WebBanHang.Models.Author
+@{
+    ViewData["Title"] = "Tác giả: " + Model.AuthorName;
+}
+
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Author" asp-action="Index">Tác giả</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.AuthorName</li>
+    </ol>
+</nav>
+
+<div class="p-4 bg-white rounded-3 shadow-sm mb-4 border">
+    <div class="row align-items-center g-3">
+        <div class="col-auto">
+            <div class="rounded-circle bg-primary-subtle text-primary p-4 text-center">
+                <i class="bi bi-person-circle fs-1"></i>
+            </div>
+        </div>
+        <div class="col">
+            <h1 class="h3 fw-bold mb-1">Tác giả: @Model.AuthorName</h1>
+            <p class="text-muted mb-0">@(string.IsNullOrWhiteSpace(Model.Biography) ? "Chưa có thông tin tiểu sử chi tiết." : Model.Biography)</p>
+        </div>
+    </div>
+</div>
+
+<h3 class="section-title mb-4">Các tác phẩm của @Model.AuthorName</h3>
+
+<div class="row g-4">
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        @foreach (var book in Model.Books)
+        {
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="book-card">
+                    <div class="book-cover-container">
+                        <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookId">
+                            <img src="@(string.IsNullOrEmpty(book.ImageUrl) ? Url.Content("~/images/default-book.svg") : book.ImageUrl)"
+                                 alt="@book.BookName" class="book-cover-img" />
+                        </a>
+                        @if (book.Quantity <= 0)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">Hết hàng</span>
+                        }
+                    </div>
+                    <div class="book-card-body">
+                        <span class="badge bg-light text-secondary border mb-1 align-self-start">@(book.Category?.CategoryName ?? "Sách")</span>
+                        <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookId" class="text-decoration-none">
+                            <h3 class="book-title" title="@book.BookName">@book.BookName</h3>
+                        </a>
+                        <div class="book-price">
+                            @book.Price.ToString("N0") VNĐ
+                        </div>
+                        <div class="book-card-footer mt-auto">
+                            <a asp-controller="Book" asp-action="Details" asp-route-id="@book.BookId" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                <i class="bi bi-info-circle"></i> Chi tiết
+                            </a>
+                            @if (book.Quantity > 0)
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookId" value="@book.BookId" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Thêm vào giỏ">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">Chưa có tác phẩm nào của tác giả này.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,68 @@
+@model IEnumerable<WebBanHang.Models.Publisher>
+@{
+    ViewData["Title"] = "Quản Lý Nhà Xuất Bản";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-building text-primary"></i> Quản Lý Nhà Xuất Bản</h1>
+        <p class="text-muted mb-0">Tổng số: <strong>@Model.Count()</strong> nhà xuất bản đối tác</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Publishers" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Thêm NXB Mới
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th style="width: 250px;">Tên nhà xuất bản</th>
+                    <th>Địa chỉ</th>
+                    <th style="width: 150px;">Điện thoại</th>
+                    <th style="width: 140px;" class="text-center">Số lượng sách</th>
+                    <th style="width: 130px;" class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted fw-bold">#@item.PublisherId</td>
+                            <td class="fw-semibold text-primary">@item.PublisherName</td>
+                            <td class="text-muted small">@(string.IsNullOrEmpty(item.Address) ? "—" : item.Address)</td>
+                            <td class="small">@(string.IsNullOrEmpty(item.Phone) ? "—" : item.Phone)</td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border">
+                                    @item.Books.Count cuốn
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-area="Admin" asp-controller="Publishers" asp-action="Edit" asp-route-id="@item.PublisherId" class="btn btn-outline-primary" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Publishers" asp-action="Delete" asp-route-id="@item.PublisherId" class="btn btn-outline-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Chưa có nhà xuất bản nào trong hệ thống.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

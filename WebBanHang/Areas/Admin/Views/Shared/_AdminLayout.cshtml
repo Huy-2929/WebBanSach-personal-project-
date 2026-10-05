@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản Trị WebBanSach</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+    <!-- Top Admin Bar -->
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-2 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 fw-bold text-white d-flex align-items-center gap-2" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+            <i class="bi bi-book-half text-primary fs-5"></i> WebBanSach Admin
+        </a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebarMenu" aria-controls="adminSidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-nav flex-row w-100 justify-content-end align-items-center px-3 gap-3">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" target="_blank" title="Mở trang bán hàng">
+                <i class="bi bi-box-arrow-up-right"></i> <span class="d-none d-sm-inline">Xem Cửa Hàng</span>
+            </a>
+            <div class="text-white-50 small d-none d-md-inline">
+                <i class="bi bi-person-badge me-1"></i> @User.Identity?.Name (Admin)
+            </div>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1">
+                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Đăng xuất</span>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="adminSidebarMenu" class="col-md-3 col-lg-2 d-md-block admin-sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="px-3 pb-2 mb-3 border-bottom border-secondary text-white-50 small text-uppercase fw-bold">
+                        Bảng điều khiển
+                    </div>
+                    <ul class="nav flex-column mb-auto">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                <i class="bi bi-speedometer2 me-2"></i> Tổng quan
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="px-3 pt-3 pb-2 mb-2 border-bottom border-secondary text-white-50 small text-uppercase fw-bold">
+                        Quản lý dữ liệu
+                    </div>
+                    <ul class="nav flex-column mb-auto">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Books" ? "active" : "")" asp-area="Admin" asp-controller="Books" asp-action="Index">
+                                <i class="bi bi-journal-bookmark me-2"></i> Quản lý Sách
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                                <i class="bi bi-grid me-2"></i> Quản lý Danh mục
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Authors" ? "active" : "")" asp-area="Admin" asp-controller="Authors" asp-action="Index">
+                                <i class="bi bi-people me-2"></i> Quản lý Tác giả
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Publishers" ? "active" : "")" asp-area="Admin" asp-controller="Publishers" asp-action="Index">
+                                <i class="bi bi-building me-2"></i> Quản lý NXB
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+                                <i class="bi bi-receipt me-2"></i> Quản lý Đơn hàng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                                <i class="bi bi-person-gear me-2"></i> Quản lý Người dùng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <!-- Alerts -->
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

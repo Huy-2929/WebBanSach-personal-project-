@@ -1,0 +1,130 @@
+@model IEnumerable<WebBanHang.Models.Book>
+@{
+    ViewData["Title"] = "Quản Lý Sách";
+    var categories = ViewBag.Categories as List<WebBanHang.Models.Category> ?? new List<WebBanHang.Models.Category>();
+    int? currentCat = ViewBag.CurrentCategory as int?;
+    string? currentSearch = ViewBag.CurrentSearch as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-journal-bookmark text-primary"></i> Quản Lý Sách</h1>
+        <p class="text-muted mb-0">Tổng số: <strong>@Model.Count()</strong> cuốn sách trong kho</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Books" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Sách Mới
+    </a>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+        <form asp-area="Admin" asp-controller="Books" asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Tìm theo tên sách, tác giả, ISBN..." value="@currentSearch" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="categoryId" class="form-select">
+                    <option value="">-- Tất cả danh mục --</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.CategoryId" selected="@(currentCat == cat.CategoryId)">@cat.CategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-funnel"></i> Lọc
+                </button>
+                <a asp-area="Admin" asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary" title="Đặt lại">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Books Table -->
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th style="width: 80px;">Ảnh</th>
+                    <th>Tên sách</th>
+                    <th>Danh mục</th>
+                    <th>Tác giả</th>
+                    <th style="width: 130px;" class="text-end">Giá bán</th>
+                    <th style="width: 100px;" class="text-center">Tồn kho</th>
+                    <th style="width: 150px;" class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted fw-bold">#@item.BookId</td>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? Url.Content("~/images/default-book.svg") : item.ImageUrl)"
+                                     alt="@item.BookName" class="rounded border p-1" style="width: 48px; height: 60px; object-fit: contain;" />
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@item.BookName</div>
+                                @if (!string.IsNullOrEmpty(item.ISBN))
+                                {
+                                    <div class="small text-muted">ISBN: @item.ISBN</div>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    @(item.Category?.CategoryName ?? "—")
+                                </span>
+                            </td>
+                            <td>@(item.Author?.AuthorName ?? "—")</td>
+                            <td class="text-end fw-bold text-danger">@item.Price.ToString("N0") đ</td>
+                            <td class="text-center">
+                                @if (item.Quantity <= 0)
+                                {
+                                    <span class="badge bg-danger">Hết hàng</span>
+                                }
+                                else if (item.Quantity <= 5)
+                                {
+                                    <span class="badge bg-warning text-dark">Còn @item.Quantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">@item.Quantity</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-area="Admin" asp-controller="Books" asp-action="Edit" asp-route-id="@item.BookId" class="btn btn-outline-primary" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Books" asp-action="Delete" asp-route-id="@item.BookId" class="btn btn-outline-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+                            Không tìm thấy cuốn sách nào phù hợp.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

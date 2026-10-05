@@ -1,0 +1,150 @@
+@model WebBanHang.Models.Order
+@{
+    ViewData["Title"] = $"Chi Tiết Đơn Hàng #{Model.OrderId}";
+    var statuses = ViewBag.Statuses as string[] ?? Array.Empty<string>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1">
+            <i class="bi bi-receipt text-primary"></i> Quản Lý Đơn Hàng #@Model.OrderId
+        </h1>
+        <p class="text-muted mb-0">Thời gian đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Danh sách đơn hàng
+    </a>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Status Update Card -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title fw-bold mb-0 text-primary">
+                    <i class="bi bi-sliders me-1"></i> Cập Nhật Trạng Thái
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span class="text-muted small">Trạng thái hiện tại:</span>
+                    <div class="mt-1">
+                        <span class="badge badge-status-@Model.Status fs-6 px-3 py-2">
+                            @Model.Status
+                        </span>
+                    </div>
+                </div>
+
+                <form asp-area="Admin" asp-controller="Orders" asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label fw-semibold">Chọn trạng thái mới:</label>
+                        <select name="newStatus" id="newStatus" class="form-select">
+                            @foreach (var s in statuses)
+                            {
+                                <option value="@s" selected="@(Model.Status == s)">@s</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-bold" onclick="return confirm('Bạn có chắc muốn đổi trạng thái đơn hàng này?');">
+                            <i class="bi bi-arrow-repeat me-1"></i> Cập Nhật Trạng Thái
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customer & Delivery Info -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-person-circle me-1 text-primary"></i> Khách Hàng & Giao Hàng
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span class="text-muted small">Tài khoản đặt hàng:</span>
+                    <div class="fw-bold">@(Model.User?.FullName ?? "—")</div>
+                    <div class="small text-muted">@Model.User?.Email</div>
+                </div>
+                <hr />
+                <div class="mb-2">
+                    <span class="text-muted small">Tên người nhận:</span>
+                    <div class="fw-semibold">@Model.ShippingName</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small">Số điện thoại:</span>
+                    <div><i class="bi bi-telephone text-primary me-1"></i> @Model.ShippingPhone</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small">Địa chỉ giao:</span>
+                    <div><i class="bi bi-geo-alt text-danger me-1"></i> @Model.ShippingAddress</div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Note))
+                {
+                    <div class="mt-3 p-3 bg-light rounded-3 small">
+                        <span class="fw-semibold text-muted">Ghi chú của khách:</span>
+                        <div class="fst-italic text-secondary mt-1">@Model.Note</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items List -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-journal-check me-1 text-primary"></i> Danh Sách Sản Phẩm (@Model.OrderDetails.Sum(x => x.Quantity) cuốn)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;" class="text-center">#</th>
+                                <th style="width: 80px;">Ảnh</th>
+                                <th>Tên sách</th>
+                                <th style="width: 130px;" class="text-end">Đơn giá</th>
+                                <th style="width: 100px;" class="text-center">Số lượng</th>
+                                <th style="width: 150px;" class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int idx = 1; }
+                            @foreach (var d in Model.OrderDetails)
+                            {
+                                <tr>
+                                    <td class="text-center text-muted">@(idx++)</td>
+                                    <td>
+                                        <img src="@(string.IsNullOrEmpty(d.Book?.ImageUrl) ? Url.Content("~/images/default-book.svg") : d.Book.ImageUrl)"
+                                             alt="@d.Book?.BookName" class="rounded border p-1" style="width: 44px; height: 56px; object-fit: contain;" />
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">@(d.Book?.BookName ?? "Sách #" + d.BookId)</div>
+                                        <div class="small text-muted">Mã ID sách: #@d.BookId</div>
+                                    </td>
+                                    <td class="text-end">@d.UnitPrice.ToString("N0") đ</td>
+                                    <td class="text-center fw-semibold">@d.Quantity</td>
+                                    <td class="text-end fw-bold text-danger">@((d.Quantity * d.UnitPrice).ToString("N0")) đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="5" class="text-end fw-bold fs-5 py-3">Tổng cộng:</td>
+                                <td class="text-end fw-bold text-danger fs-5 py-3">@Model.TotalAmount.ToString("N0") VNĐ</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+@model WebBanHang.Models.User
+@{
+    ViewData["Title"] = $"Phân Quyền - {Model.FullName}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-shield-lock text-primary"></i> Phân Quyền Người Dùng</h1>
+        <p class="text-muted mb-0">Cập nhật vai trò hệ thống cho tài khoản: <strong>@Model.FullName</strong></p>
+    </div>
+    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-lg-5">
+                <div class="mb-4 text-center">
+                    <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex p-3 mb-2">
+                        <i class="bi bi-person-gear fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold">@Model.FullName</h4>
+                    <p class="text-muted small mb-0">@Model.Email</p>
+                </div>
+
+                <div class="bg-light p-3 rounded-3 mb-4 small">
+                    <div class="mb-1"><span class="text-muted">Mã ID:</span> <strong>#@Model.UserId</strong></div>
+                    <div class="mb-1"><span class="text-muted">Số điện thoại:</span> @(string.IsNullOrEmpty(Model.Phone) ? "Chưa có" : Model.Phone)</div>
+                    <div class="mb-1"><span class="text-muted">Địa chỉ:</span> @(string.IsNullOrEmpty(Model.Address) ? "Chưa có" : Model.Address)</div>
+                    <div><span class="text-muted">Ngày đăng ký:</span> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+
+                <form asp-area="Admin" asp-controller="Users" asp-action="EditRole" asp-route-id="@Model.UserId" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label for="role" class="form-label fw-semibold">Chọn vai trò hệ thống:</label>
+                        <select name="role" id="role" class="form-select form-select-lg">
+                            <option value="Customer" selected="@(Model.Role == "Customer")">Customer (Khách hàng mua sách)</option>
+                            <option value="Admin" selected="@(Model.Role == "Admin")">Admin (Quản trị viên toàn quyền)</option>
+                        </select>
+                        <div class="form-text text-muted mt-2">
+                            Lưu ý: Quyền Admin có thể truy cập toàn bộ khu vực quản trị, thêm sửa xóa sách, danh mục và cập nhật đơn hàng.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">
+                            <i class="bi bi-check-lg me-1"></i> Lưu Quyền Hạn
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

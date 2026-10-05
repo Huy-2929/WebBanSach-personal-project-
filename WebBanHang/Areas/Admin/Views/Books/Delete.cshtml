@@ -1,0 +1,66 @@
+@model WebBanHang.Models.Book
+@{
+    ViewData["Title"] = $"Xóa Sách - {Model.BookName}";
+    bool hasOrders = ViewBag.HasOrders == true;
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Xác Nhận Xóa Sách
+                </h5>
+            </div>
+            <div class="card-body p-4 p-lg-5">
+                @if (hasOrders)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-shield-x me-2 fs-5"></i>
+                        <strong>Cảnh báo:</strong> Cuốn sách này đã phát sinh trong lịch sử đơn hàng của khách hàng. Bạn <strong>không thể xóa</strong> cuốn sách này để bảo toàn tính toàn vẹn dữ liệu đơn hàng!
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-circle me-2 fs-5"></i>
+                        Bạn có chắc chắn muốn xóa cuốn sách này khỏi danh mục hệ thống? Hành động này không thể hoàn tác.
+                    </div>
+                }
+
+                <div class="row g-4 my-2">
+                    <div class="col-md-3 text-center">
+                        <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? Url.Content("~/images/default-book.svg") : Model.ImageUrl)"
+                             alt="@Model.BookName" class="rounded border p-1 shadow-sm" style="max-height: 160px; object-fit: contain;" />
+                    </div>
+                    <div class="col-md-9">
+                        <h4 class="fw-bold mb-2">@Model.BookName</h4>
+                        <div class="mb-1"><span class="text-muted">Mã sách:</span> <strong>#@Model.BookId</strong></div>
+                        <div class="mb-1"><span class="text-muted">Danh mục:</span> <strong>@(Model.Category?.CategoryName ?? "—")</strong></div>
+                        <div class="mb-1"><span class="text-muted">Tác giả:</span> <strong>@(Model.Author?.AuthorName ?? "—")</strong></div>
+                        <div class="mb-1"><span class="text-muted">Nhà xuất bản:</span> <strong>@(Model.Publisher?.PublisherName ?? "—")</strong></div>
+                        <div class="mb-1"><span class="text-muted">Giá bán:</span> <strong class="text-danger">@Model.Price.ToString("N0") VNĐ</strong></div>
+                        <div class="mb-1"><span class="text-muted">Số lượng tồn:</span> <strong>@Model.Quantity cuốn</strong></div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-area="Admin" asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary px-4">
+                        Quay lại danh sách
+                    </a>
+                    @if (!hasOrders)
+                    {
+                        <form asp-area="Admin" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.BookId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                                <i class="bi bi-trash-fill me-1"></i> Xác Nhận Xóa
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

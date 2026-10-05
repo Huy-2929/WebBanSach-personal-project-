@@ -1,0 +1,109 @@
+@model WebBanHang.ViewModels.BookViewModel
+@{
+    ViewData["Title"] = "Thêm Sách Mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-plus-circle text-primary"></i> Thêm Sách Mới</h1>
+        <p class="text-muted mb-0">Điền thông tin sách để thêm vào hệ thống cửa hàng</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4 p-lg-5">
+        <form asp-area="Admin" asp-controller="Books" asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="BookName" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <input asp-for="BookName" class="form-control" placeholder="Nhập tên sách..." />
+                    <span asp-validation-for="BookName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ISBN" class="form-label fw-semibold"></label>
+                    <input asp-for="ISBN" class="form-control" placeholder="978-604-..." />
+                    <span asp-validation-for="ISBN" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Price" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <div class="input-group">
+                        <input asp-for="Price" class="form-control" type="number" step="1000" min="0" placeholder="50000" />
+                        <span class="input-group-text">VNĐ</span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Quantity" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <input asp-for="Quantity" class="form-control" type="number" min="0" placeholder="10" />
+                    <span asp-validation-for="Quantity" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="PublishedYear" class="form-label fw-semibold"></label>
+                    <input asp-for="PublishedYear" class="form-control" type="number" min="1900" max="2100" placeholder="2024" />
+                    <span asp-validation-for="PublishedYear" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="CategoryId" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="AuthorId" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <select asp-for="AuthorId" class="form-select" asp-items="ViewBag.AuthorId">
+                        <option value="">-- Chọn tác giả --</option>
+                    </select>
+                    <span asp-validation-for="AuthorId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="PublisherId" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                    <select asp-for="PublisherId" class="form-select" asp-items="ViewBag.PublisherId">
+                        <option value="">-- Chọn nhà xuất bản --</option>
+                    </select>
+                    <span asp-validation-for="PublisherId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="ImageFile" class="form-label fw-semibold"></label>
+                    <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+                    <span class="form-text text-muted">Chọn ảnh bìa định dạng JPG, PNG, WEBP. Ảnh sẽ được lưu vào thư mục wwwroot/images/books/.</span>
+                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5" placeholder="Nhập tóm tắt, giới thiệu chi tiết về nội dung cuốn sách..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-area="Admin" asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary px-4">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary px-4 fw-bold">
+                    <i class="bi bi-check-lg me-1"></i> Lưu Sách Mới
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

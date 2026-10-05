@@ -1,0 +1,57 @@
+@model WebBanHang.Models.Category
+@{
+    ViewData["Title"] = $"Xóa Danh Mục - {Model.CategoryName}";
+    bool hasBooks = ViewBag.HasBooks == true;
+}
+
+<div class="row justify-content-center py-3">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Xác Nhận Xóa Danh Mục
+                </h5>
+            </div>
+            <div class="card-body p-4 p-lg-5">
+                @if (hasBooks)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-shield-x me-2 fs-5"></i>
+                        <strong>Không thể xóa:</strong> Hiện đang có <strong>@Model.Books.Count</strong> cuốn sách thuộc danh mục này. Vui lòng chuyển hoặc xóa hết sách thuộc danh mục trước!
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-circle me-2 fs-5"></i>
+                        Bạn có chắc chắn muốn xóa danh mục <strong>@Model.CategoryName</strong>? Hành động này không thể hoàn tác.
+                    </div>
+                }
+
+                <div class="bg-light p-3 rounded-3 my-3">
+                    <div class="mb-2"><span class="text-muted">Mã danh mục:</span> <strong>#@Model.CategoryId</strong></div>
+                    <div class="mb-2"><span class="text-muted">Tên danh mục:</span> <strong class="text-primary">@Model.CategoryName</strong></div>
+                    <div class="mb-2"><span class="text-muted">Mô tả:</span> @(string.IsNullOrEmpty(Model.Description) ? "—" : Model.Description)</div>
+                    <div><span class="text-muted">Số sách hiện có:</span> <strong>@Model.Books.Count cuốn</strong></div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-outline-secondary px-4">
+                        Quay lại danh sách
+                    </a>
+                    @if (!hasBooks)
+                    {
+                        <form asp-area="Admin" asp-controller="Categories" asp-action="Delete" asp-route-id="@Model.CategoryId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                                <i class="bi bi-trash-fill me-1"></i> Xác Nhận Xóa
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
